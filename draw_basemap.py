@@ -1,17 +1,22 @@
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 ## mamba install python=3.9 anaconda::basemap=1.4.0
 
-def plot_all(ax):
+def plot_all(ax, shapefiles=None):
 	#basemap without arcgis projection='cass'
 	#provide lower left and upper right longitude and latitude
 	map = Basemap(llcrnrlon=-10,llcrnrlat=33,urcrnrlon=27,urcrnrlat=45.5,
 	             resolution='i', area_thresh=500., epsg=5520, ax=ax)
 
-	map.drawcoastlines()
-	map.drawcountries()
+	if not shapefiles:
+		map.drawcoastlines()
+		map.drawcountries()
+	else:
+		for shapefile in shapefiles:
+			map.readshapefile(shapefile, 'NA')
 
 	#list of latitudes to plot
 	#labels = [left,right,top,bottom]
@@ -75,14 +80,18 @@ def plot_all(ax):
 
 	map.drawmapscale(-10, 45.5, 0, 0, 200)
 
-def plot_hz(ax):
+def plot_hz(ax, shapefiles=None):
 	#basemap without arcgis projection='cass'
 	#provide lower left and upper right longitude and latitude
 	map = Basemap(llcrnrlon=0.53,llcrnrlat=42.15,urcrnrlon=5,urcrnrlat=43.85,
 	             resolution='i', area_thresh=500., epsg=5520, ax=ax)
 
-	map.drawcoastlines()
-	map.drawcountries()
+	if not shapefiles:
+		map.drawcoastlines()
+		map.drawcountries()
+	else:
+		for shapefile in shapefiles:
+			map.readshapefile(shapefile, 'NA')
 
 	#list of latitudes to plot
 	#labels = [left,right,top,bottom]
@@ -123,6 +132,11 @@ def plot_hz(ax):
 
 	map.drawmapscale(0.8, 43.6, 0, 0, 20)
 
+# https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_boundary_lines_land.zip
+shp_path_1 = 'ne_10m_admin_0_boundary_lines_land/ne_10m_admin_0_boundary_lines_land'
+# https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_coastline.zip
+shp_path_2 = 'ne_10m_coastline/ne_10m_coastline'
+
 fig, axs = plt.subplots(nrows=2, figsize=[10,10])
 all_ax = axs[0]
 hz_ax = axs[1]
@@ -130,11 +144,11 @@ hz_ax = axs[1]
 all_ax.set_title('A', loc='left')
 hz_ax.set_title('B', loc='left')
 
-plot_all(all_ax)
-plot_hz(hz_ax)
+plot_all(all_ax, shapefiles=[shp_path_1, shp_path_2])
+plot_hz(hz_ax, shapefiles=[shp_path_1, shp_path_2])
 
 plt.tight_layout()
 
-plt.savefig('basemap_comp.png', dpi=200)
+plt.savefig('basemap_comp.png', dpi=300)
 plt.savefig('basemap_comp.pdf')
 plt.close()
